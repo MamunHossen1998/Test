@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\OfferStoreRequest;
+use App\Models\Category;
+use App\Models\Location;
+use App\Models\Offer;
 use Illuminate\Http\Request;
 
 class OfferController extends Controller
@@ -19,15 +23,24 @@ class OfferController extends Controller
      */
     public function create()
     {
-        echo "yes";
+        $locations = Location::select('id', 'title')->get();
+        $categories = Category::select('id', 'title')->get();
+        return view('offers.create',compact('locations', 'categories'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(OfferStoreRequest $request)
     {
-        //
+        $data = array_merge(
+            ['author_id' => auth()->user()->id],
+            $request->all()
+        );
+        $offer = Offer::create($data);
+        $offer->categories()->sync($request->get('categories'));
+        $offer->locations()->sync($request->get('locations'));
+        // return $request->get('location');
     }
 
     /**
