@@ -6,6 +6,7 @@ use App\Http\Requests\OfferStoreRequest;
 use App\Models\Category;
 use App\Models\Location;
 use App\Models\Offer;
+use App\Services\OfferServices;
 use Illuminate\Http\Request;
 
 class OfferController extends Controller
@@ -15,7 +16,7 @@ class OfferController extends Controller
      */
     public function index()
     {
-        //
+        return "i love u";
     }
 
     /**
@@ -23,48 +24,64 @@ class OfferController extends Controller
      */
     public function create()
     {
-        $locations = Location::select('id', 'title')->get();
-        $categories = Category::select('id', 'title')->get();
+        $this->authorize('create',Offer::class);
+        $locations = Location::select('id', 'title')->orderBy('title')->get();
+        $categories = Category::select('id', 'title')->orderBy('title')->get();
         return view('offers.create',compact('locations', 'categories'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(OfferStoreRequest $request)
+    public function store(OfferStoreRequest $request, OfferServices $offerServices)
     {
-        $data = array_merge(
-            ['author_id' => auth()->user()->id],
-            $request->all()
+        $this->authorize('create', Offer::class);
+            // return $request->all();
+            $offerServices->store($request->validated(),
+            $request->hasFile('image')? $request->file('image'):null
         );
-        $offer = Offer::create($data);
-        $offer->categories()->sync($request->get('categories'));
-        $offer->locations()->sync($request->get('locations'));
-        // return $request->get('location');
+        // $data = array_merge(
+        //     ['author_id' => auth()->user()->id],
+        //     $request->all()
+        // );
+        // $offer = Offer::create($data);
+        // $offer->categories()->sync($request->get('categories'));
+        // $offer->locations()->sync($request->get('locations'));
+        return redirect()->back()->with(['success'=>'Offer created successfully']);
+      
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Offer $offer)
     {
-        //
+        return view('offers.show',compact('offer'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Offer $offer)
     {
-        //
+        $this->authorize('update', $offer);
+        $locations = Location::orderBy('title')->get();
+        $categories = Category::orderBy('title')->get();
+        return view('offers.edit',compact('offer','locations','categories'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(OfferStoreRequest $request, Offer $offer, OfferServices $offerServices)
     {
-        //
+        $this->authorize('update', $offer);
+        $offerServices->update(
+            $offer,
+            $request->validated(),
+            $request->hasFile('image') ? $request->file('image') : null
+        );
+        return redirect()->back()->with(['success' => 'Offer updated successfully']);
     }
 
     /**

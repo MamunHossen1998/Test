@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\File;
 
 class OfferStoreRequest extends FormRequest
 {
@@ -25,9 +26,11 @@ class OfferStoreRequest extends FormRequest
             'title' => 'required',
             'description' => 'required',
             'price' => 'required|numeric|digits_between:1,5',
-            'categories.*' => 'exists:categories,id',
-            // 'categories.*' => 'filled',
+            // 'categories.*' => 'exists:categories,id',
+            'image' => ['nullable',File::image()->max('10mb')],
+            'categories.*' => 'filled',
             'locations.*' => 'filled',
+            // 'locations.*' => 'exists:locations,id',
         ];
     }
     public function messages(): array
