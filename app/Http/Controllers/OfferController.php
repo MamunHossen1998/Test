@@ -16,7 +16,8 @@ class OfferController extends Controller
      */
     public function index()
     {
-        return "i love u";
+        $offers = Offer::all();
+        return view('offers.index',compact('offers'));
     }
 
     /**

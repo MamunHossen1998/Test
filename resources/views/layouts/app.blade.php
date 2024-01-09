@@ -41,7 +41,7 @@
                     @if (Auth::user())
                         <ul class="navbar-nav me-auto">
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('offers.create') }}">{{('Offers') }}</a>
+                                <a class="nav-link" href="{{ route('offers.index') }}">{{('Offers') }}</a>
                             </li>
                         </ul>
                     @endif
