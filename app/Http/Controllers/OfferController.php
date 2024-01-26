@@ -17,7 +17,7 @@ class OfferController extends Controller
     public function index()
     {
         $offers = Offer::all();
-        return view('offers.index',compact('offers'));
+        return view('offers.index', compact('offers'));
     }
 
     /**
@@ -25,10 +25,10 @@ class OfferController extends Controller
      */
     public function create()
     {
-        $this->authorize('create',Offer::class);
+        $this->authorize('create', Offer::class);
         $locations = Location::select('id', 'title')->orderBy('title')->get();
         $categories = Category::select('id', 'title')->orderBy('title')->get();
-        return view('offers.create',compact('locations', 'categories'));
+        return view('offers.create', compact('locations', 'categories'));
     }
 
     /**
@@ -37,9 +37,10 @@ class OfferController extends Controller
     public function store(OfferStoreRequest $request, OfferServices $offerServices)
     {
         $this->authorize('create', Offer::class);
-            // return $request->all();
-            $offerServices->store($request->validated(),
-            $request->hasFile('image')? $request->file('image'):null
+        // return $request->all();
+        $offerServices->store(
+            $request->validated(),
+            $request->hasFile('image') ? $request->file('image') : null
         );
         // $data = array_merge(
         //     ['author_id' => auth()->user()->id],
@@ -48,8 +49,7 @@ class OfferController extends Controller
         // $offer = Offer::create($data);
         // $offer->categories()->sync($request->get('categories'));
         // $offer->locations()->sync($request->get('locations'));
-        return redirect()->back()->with(['success'=>'Offer created successfully']);
-      
+        return redirect()->back()->with(['success' => 'Offer created successfully']);
     }
 
     /**
@@ -57,7 +57,7 @@ class OfferController extends Controller
      */
     public function show(Offer $offer)
     {
-        return view('offers.show',compact('offer'));
+        return view('offers.show', compact('offer'));
     }
 
     /**
@@ -68,7 +68,7 @@ class OfferController extends Controller
         $this->authorize('update', $offer);
         $locations = Location::orderBy('title')->get();
         $categories = Category::orderBy('title')->get();
-        return view('offers.edit',compact('offer','locations','categories'));
+        return view('offers.edit', compact('offer', 'locations', 'categories'));
     }
 
     /**

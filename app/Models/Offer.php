@@ -23,7 +23,7 @@ class Offer extends Model implements HasMedia
         'author_id',
     ];
 
-    public function author():BelongsTo
+    public function author(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -36,7 +36,8 @@ class Offer extends Model implements HasMedia
     {
         return $this->belongsToMany(Location::class);
     }
-    public function getImageUrlAttribute():string  {
+    public function getImageUrlAttribute(): string
+    {
         return $this->hasMedia()
             ? $this->getFirstMediaUrl()
             : self::PLACEHOLDERIMAGE;
