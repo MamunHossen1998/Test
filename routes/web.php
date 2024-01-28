@@ -20,6 +20,7 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function(){
     Route::resource('offers', App\Http\Controllers\OfferController::class);
+    Route::get('/myOffer', [App\Http\Controllers\OfferController::class, 'myOffer'])->name('myOffer');
 });
 
 Auth::routes();

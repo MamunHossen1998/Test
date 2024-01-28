@@ -14,10 +14,44 @@ class OfferController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function myOffer()
     {
-        $offers = Offer::all();
-        return view('offers.index', compact('offers'));
+        $this->authorize('myOffer', Offer::class);
+        $offers = Offer::where('author_id',auth()->user()->id)->paginate(5);
+        $categories = Category::all();
+        $locations = Location::all();
+        return $locations;
+        return view('offers.index', compact('offers', 'categories', 'locations'));
+    }
+    public function index(Request $request)
+    {
+        $query = Offer::with(['author','categories','locations']);
+        // return $query;
+        
+        $categories = Category::all();
+        $locations = Location::all();
+    
+        // dd($request->query());
+        if($request->query('title')){
+            $query = $query->where('id', $request->query('title'));
+        }
+        if($request->query('status')){
+            $query =$query->where('status', $request->query('status'));
+        }
+        if($request->query('daterange')){
+            $drange = $request->query('daterange');
+            $after_explode = explode('-', $drange);
+            $from = strtotime($after_explode[0]);
+            $from = date("Y-m-d 00:00:00", $from);
+            $to = strtotime(end($after_explode));
+            $to = date("Y-m-d 23:59:00", $to);
+            $query = $query->whereBetween('created_at', [$from,$to]);
+            
+        }
+       
+        $offers = $query->paginate(5);
+     
+        return view('offers.index', compact('offers', 'categories', 'locations'));
     }
 
     /**

@@ -15,25 +15,49 @@
                         @else
                             <div class="row">
                                 <div class="col-md-12 ">
-                                    <form action="" method="">
+                                    <form action="{{ route('offers.index') }}" method="get">
                                         <div class="d-flex  me-2">
-                                            <div class="col-md-3 form-group ">
+                                            <div class="col-md-2 form-group">
+                                               <input type="text" name="daterange" value="" />
+                                            </div>
+                                            <div class="col-md-2 form-group">
                                                 <select name="title" id="title" class="form-control select2">
-                                                    <option value="0">--Select one--</option>
+                                                    <option value="0">--Select Offer--</option>
                                                     @foreach ($offers as $offer)
                                                         <option value="{{ $offer->id }}">{{ $offer->title }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="col-md-3 form-group  ">
+                                            <div class="col-md-2 form-group">
+                                                <select name="location" id="location" class="form-control select2">
+                                                    <option value="0">--Select one location--</option>
+                                                    @foreach ($locations as $location)
+                                                        <option value="{{ $location->id }}">{{ $location->title }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="col-md-2 form-group">
                                                 <select name="category" id="category" class="form-control select2">
-                                                    <option value="0">--Select one--</option>
-                                                    @foreach ($offers as $offer)
-                                                        <option value="{{ $offer->id }}">{{ $offer->title }}</option>
+                                                    <option value="0">--Select one category--</option>
+                                                    @foreach ($categories as $category)
+                                                        <option value="{{ $category->id }}">{{ $category->title }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
-                                    </div>
+                                            <div class="col-md-2 form-group">
+                                                <select name="status" id="status" class="form-control select2">
+                                                    <option value="0">--Select one status--</option>
+                                                   <option value="published">Published</option>
+                                                   <option value="draft">Draft</option>
+                                        
+                                                </select>
+                                            </div>
+                                            <div class="col-md-1 form-group">
+                                                <button class="btn btn-info btn-sm">Search</button>
+                                            </div>
+                                           
+                                        </div>
                                     </form>
                                  </div>
                             </div>
@@ -47,6 +71,7 @@
                                         <th>Image</th>
                                         <th>Description</th>
                                         <th>Category</th>
+                                        <th>Location</th>
                                         <th>Status</th>
                                         <th>Created_at</th>
                                         <th>Updated_at</th>
@@ -65,18 +90,24 @@
                                                 <img src="{{ $offer->image_url }} " alt="not found" width="60" height="60">
                                             </td>
                                             <td>{{ $offer->description }}</td>
-                                            <td>{{ $offer->categories }}</td>
+                                            <td>{{ getTitles($offer->categories) }}</td>
+                                            <td>{{ getTitles($offer->locations) }}</td>
                                             <td>{{ $offer->status }}</td>
                                             <td>{{ $offer->created_at }}</td>
                                             <td>{{ $offer->updated_at }}</td>
                                             <td>
-                                                <a href="#" class="btn btn-info">Edit</a>
+                                                <a href="{{ route('offers.edit',$offer->id) }}" class="btn btn-info">Edit</a>
                                                 <a href="#" class="btn btn-danger">Delete</a>
                                             </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
+                            <div>
+                                {{ $offers->withQueryString()->links('pagination::bootstrap-4') }}
+                            </div>
+                            
+
                         @endif
 
                     </div>
@@ -86,7 +117,21 @@
     </div>
 @endsection
 @section('script')
+ 
+<script>
+    $(function() {
+        $('input[name="daterange"]').daterangepicker({
+            opens: 'left'
+        }, function(start, end, label) {
+            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        });
+    });
+</script>
+
+
+
   <script>
+
        
        $(document).ready(function() {
             $('.select2').select2({
